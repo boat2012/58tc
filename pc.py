@@ -17,6 +17,9 @@ def readformxls(fn):    # 将excel 文件中的数据读取到一个list中
 def writetoxls(list,fn):
     wbook = xlwt.Workbook()
     wsheet = wbook.add_sheet('sheet1')
+    cellxf_g = xlwt.easyxf('font: color green, bold true')
+    cellxf_r = xlwt.easyxf('font: color red, bold true')
+    cellxf_b = xlwt.easyxf("font: bold false")
     for i in range(len(list)):
         wsheet.write(i,0,xlwt.Formula('HYPERLINK("%s";"%s")'%(list[i][6].value,list[i][0].value)))
         wsheet.write(i,1,list[i][1].value.decode('utf-8'))
@@ -27,11 +30,11 @@ def writetoxls(list,fn):
         wsheet.write(i,6,list[i][6].value.decode('utf-8'))
         for j in range(7,len(list[i]),2):
             if list[i][j+1].value > list[i][2].value:
-                cellxf = xlwt.easyxf('font: color green, bold true')
-            elif list[i][j+1].value == list[i][2].value:
-                cellxf = xlwt.easyxf('font: bold false')
+                cellxf = cellxf_g
+            elif list[i][j+1].value < list[i][2].value:
+                cellxf = cellxf_r
             else:
-                cellxf = xlwt.easyxf('font: color red, bold true')
+                cellxf = cellxf_b
             wsheet.write(i,j,list[i][j].value,cellxf)
             wsheet.write(i,j+1,list[i][j+1].value,cellxf)
     wsheet.col(0).width = 13000
