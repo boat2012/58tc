@@ -16,7 +16,7 @@ from xlutils.copy import copy
 httplib.HTTPConnection._http_vsn = 10
 httplib.HTTPConnection._http_vsn_str = 'HTTP/1.0'
 
-exceptionStr=["分校","延安","省体","大儒","安华","文博"]
+exceptionStr=["分校","延安","省体","大儒","安华","文博","十八中"]
 # 将抓取到的有用信息封装成类
 class Info(object):
     def __init__(self,title='',href = '',zj = '',dj = '',mj='',fx = '',putday='',description=''): # 总价，单价，面积，房型
@@ -133,8 +133,10 @@ def Info2Excel(myInfo,filename):
           wsheet.write(inserRow,3,item.dj.decode('utf-8'))
           wsheet.write(inserRow,4,item.fx.decode('utf-8'))
           wsheet.write(inserRow,5,item.mj.decode('utf-8'))
+          wsheet.write(inserRow,6,item.href.decode('utf-8'))
           inserRow = inserRow + 1
     print filename
+    wsheet.col(6).hidden=True
     wbook.save(filename)
 
 
@@ -165,7 +167,7 @@ if __name__ == '__main__':
     key = u'划片钱塘小'
     content = urllib2.quote(key.encode('utf-8'))
     allcont = []
-    for i in range(20,0,-1):
+    for i in range(15,0,-1):
         api_url = 'http://fz.58.com/ershoufang/pn%d/?key=%s'%(i,content)
         print api_url
         tc = tc58(api_url)
@@ -174,9 +176,14 @@ if __name__ == '__main__':
         for item in tc.get_addr_infos():
             allcont.append(item)
     allcont=sorted(allcont,key=operator.attrgetter("zj"))
+
+    newcont=[]
+    for i in range(1,len(allcont)):
+        if allcont[i].title != allcont[i-1].title:
+            newcont.append(allcont[i])
     #sorted(allcont,key=operator.attrgetter("putday"),reverse=True)
-    Info2Excel(allcont,"test%s.xls" % time.strftime("%m%d") )
-    print len(allcont)
+    Info2Excel(newcont,"test%s.xls" % time.strftime("%m%d") )
+    print len(newcont)
 
 #    Info2db(allcont,"test.db")
 #    printdb("test.db")
